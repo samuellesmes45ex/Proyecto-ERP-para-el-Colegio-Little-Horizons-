@@ -1,0 +1,14 @@
+# Credentials and runtime output
+config.properties
+error_log.txt
+invoices/
+
+# Build output
+target/
+out/
+
+# IDE files
+.idea/
+*.iml
+nbproject/private/
+.vscode/

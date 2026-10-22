@@ -1,0 +1,5 @@
+# Copy this file to config.properties and fill in your own values.
+# config.properties is ignored by Git and must NEVER be committed.
+db.url=jdbc:mysql://localhost:3306/erp_little_horizons?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
+db.user=erp_user
+db.password=CHANGE_ME

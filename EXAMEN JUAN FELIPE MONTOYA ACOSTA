@@ -1,0 +1,90 @@
+package test;
+
+import com.littlehorizons.erp.config.DatabaseConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+    static final int ANIO = 2025;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("========================================");
+        System.out.println("EXPORTADOR DE MATERIAS ASIGNADAS - AÑO 2025");
+        System.out.println();
+
+        try {
+            int id = 0;
+            String[] profesor = null;
+
+            while (profesor == null) {
+                System.out.print("Ingrese el ID del profesor ");
+                String texto = scanner.nextLine().trim();
+
+                try {
+                    id = Integer.parseInt(texto);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error Debe ingresar un número válido.");
+                    continue;
+                }
+
+                profesor = buscarProfesor(id);
+                if (profesor == null) {
+                    System.out.println("Error: No se encontró ningún profesor con el ID " + id + ".");
+                }
+            }
+
+            String nombre = profesor[0];
+            List<String[]> materias = buscarMaterias(id);
+
+            if (materias.isEmpty()) {
+                System.out.println("Error: El profesor " + nombre + " no tiene materias asignadas en " + ANIO + ".");
+                return;
+            }
+
+            String archivo = "materias_profesor_" + id + "_" + ANIO + ".txt";
+            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String igual = "========================================";
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(igual).append("\n");
+            sb.append("COLEGIO INTERNACIONAL \"LITTLE HORIZONS\"\n");
+            sb.append("REPORTE DE MATERIAS ASIGNADAS  AÑO ").append(ANIO).append("\n");
+            sb.append(igual).append("\n\n");
+            sb.append("Nombre completo : ").append(nombre).append("\n");
+            sb.append("Documento       : ").append(profesor[1]).append("\n");
+            sb.append(guion).append("\n");
+            sb.append(String.format("%-10s %-35s %-20s%n", "Código", "Materia", "Grado"));
+            sb.append(guion).append("\n");
+            for (String[] m : materias) {
+                sb.append(String.format("%-10s %-35s %-20s%n", m[0], m[1], m[2]));
+            }
+            sb.append(guion).append("\n\n");
+            sb.append("Documento generado el: ").append(fecha).append("\n");
+
+            try {
+                Files.write(Paths.get(archivo), sb.toString().getBytes(StandardCharsets.UTF_8));
+                System.out.println("Archivo generado exitosamente.");
+                System.out.println("Profesor: " + nombre);
+                System.out.println("Archivo: " + archivo);
+            } catch (Exception e) {
+                System.out.println("Error: No se pudo crear el archivo de exportación.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: No se pudo consultar la base de datos.");
+        }
+    }
+
+
+}
